@@ -1,0 +1,38 @@
+import telebot
+
+bot = telebot.TeleBot('6047241077:AAHHxM7Rjx2ZuLIsC-LDLpmP_AGpMGpRi4Q')
+soccredit = {}
+
+
+@bot.message_handler(commands=['credit'])
+def credit(message):
+    if message.reply_to_message and message.from_user.id != message.reply_to_message.from_user.id:
+        if message.reply_to_message.from_user.id not in soccredit:
+            soccredit[message.reply_to_message.from_user.id] = 0
+        bot.send_message(message.chat.id, f'Его социальный кредит — {soccredit[message.reply_to_message.from_user.id]}')
+    else:
+        if message.from_user.id not in soccredit:
+            soccredit[message.from_user.id] = 0
+        bot.send_message(message.chat.id, f'Твой социальный кредит — {soccredit[message.from_user.id]}')
+
+
+@bot.message_handler(commands=['add'])
+def addcredit(message):
+    if message.reply_to_message and message.from_user.id != message.reply_to_message.from_user.id:
+        print(message.reply_to_message.from_user.id, message.from_user.id)
+        if message.reply_to_message.from_user.id not in soccredit:
+            soccredit[message.reply_to_message.from_user.id] = int(message.text.split(maxsplit=1)[1])
+        else:
+            soccredit[message.reply_to_message.from_user.id] = soccredit[message.reply_to_message.from_user.id] + \
+                                                               int(message.text.split(maxsplit=1)[1])
+        bot.send_message(message.chat.id, f'Вы изменили его соцкредит на {message.text.split(maxsplit=1)[1]}. '
+                                          f'Теперь его соцкредит равен — '
+                                          f'{soccredit[message.reply_to_message.from_user.id]}')
+    else:
+        if message.reply_to_message.from_user.id not in soccredit:
+            soccredit[message.reply_to_message.from_user.id] = 0
+        soccredit[message.reply_to_message.from_user.id] -= 30
+        bot.send_message(message.chat.id, f'Вам не разрешено изменять свой соцкредит! -30 соцкредит!!!')
+
+
+bot.polling()
